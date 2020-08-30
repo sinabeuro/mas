@@ -9,17 +9,17 @@ class Worker(object):
         self.ident = ident
         self.worker = worker
         
-    async def request_reservation(self, theater, day, time, movie, seat, n, silent=True):
-        if self.worker : self.worker.request_reservation(theater, day, time, movie, seat, n, silent)
+    async def request(self, theater, day, time, movie, seat, n, silent=True):
+        if self.worker : self.worker.request(theater, day, time, movie, seat, n, silent)
         log.info("request is activated")
 
-    async def terminate_reservation(self, worker_id):
-        if self.worker : self.worker.terminate_reservation(worker_id)
+    async def terminate(self, worker_id):
+        if self.worker : self.worker.terminate(worker_id)
         log.info("termination is activated")
 
-    async def get_status(self):
-        if self.worker : self.worker.get_status()
-        log.info("get_status is activated")
+    async def status(self):
+        if self.worker : self.worker.status()
+        log.info("status is activated")
         return 0
 
     async def notity(self, msg):

@@ -11,11 +11,11 @@ async def main(args):
     await cli.connect(notify=notify)
 
     if args.request is not None:
-        ret = await cli.request_reservation(*args.request)
+        ret = await cli.request(*args.request)
     elif args.terminate is not None:
-        ret = await cli.terminate_reservation(int(*args.terminate))
+        ret = await cli.terminate(int(*args.terminate))
     elif args.status is not None:
-        ret = await cli.get_status()
+        ret = await cli.status()
 
     pprint.pprint(ret)
 

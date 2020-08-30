@@ -36,19 +36,15 @@ class Client():
         await self.listener.close()
         await self.client.call.disconnect()
 
-    async def request_reservation(self, theater, day, time, movie, seat, n, silent="True"):
-        self.ident = await self.client.call.request_reservation(theater,
+    async def request(self, theater, day, time, movie, seat, n, silent="True"):
+        self.ident = await self.client.call.request(theater,
             day, time, movie, seat, n, silent)
         return self.ident
 
-    async def terminate_reservation(self, worker_id):
-        ret = await self.client.call.terminate_reservation(worker_id)
+    async def terminate(self, worker_id):
+        ret = await self.client.call.terminate(worker_id)
         return  ret
 
-    async def get_status(self):
-        ret = await self.client.call.get_status()
-        return  ret
-
-    async def terminate_server(self):
-        ret = await self.client.call.terminate_server()
+    async def status(self):
+        ret = await self.client.call.status()
         return  ret

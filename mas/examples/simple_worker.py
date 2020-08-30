@@ -8,13 +8,13 @@ class SimpleWorker(Worker):
     def __init__(self):
         super().__init__()
 
-    async def request_reservation(self, theater, day, time, movie, seat, n, silent=True):
+    async def request(self, theater, day, time, movie, seat, n, silent=True):
         pass
 
-    async def terminate_reservation(self, worker_id):
+    async def terminate(self, worker_id):
         pass
 
-    async def get_status(self):
+    async def status(self):
         return 0
 
     async def notity(self, msg):

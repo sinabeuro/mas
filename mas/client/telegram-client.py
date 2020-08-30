@@ -35,29 +35,29 @@ async def send_welcome(message: types.Message):
         await message.reply("Connection failed")
 
 @dp.message_handler(commands=['r', 'request'])
-async def request_reservation(message: types.Message):
+async def request(message: types.Message):
     args = message.text.split()[1:]
 
-    ret = await cli.request_reservation(*args)
+    ret = await cli.request(*args)
     if ret >= 0:
         await bot.send_message(message.chat.id, "Request succeeded, Worker : %d" % ret)
     else:
         await bot.send_message(message.chat.id, "Request failed")
 
 @dp.message_handler(commands=['t', 'terminate'])
-async def terminate_reservation(message: types.Message):
+async def terminate(message: types.Message):
     args = message.text.split()[1:]
 
-    ret = await cli.terminate_reservation(int(*args))
+    ret = await cli.terminate(int(*args))
     if ret == 0:
         await bot.send_message(message.chat.id, "Termination succeeded")
     else:
         await bot.send_message(message.chat.id, "Termination failed")
 
 @dp.message_handler(commands=['stat', 'status'])
-async def get_status(message: types.Message):
+async def status(message: types.Message):
 
-    ret = await cli.get_status()
+    ret = await cli.status()
     if ret is not {}:
         await bot.send_message(message.chat.id, pprint.pformat(ret, indent=4))
     else:

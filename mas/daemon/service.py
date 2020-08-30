@@ -36,7 +36,7 @@ class Service(rpc.AttrHandler):
         self.listeners.append(notifier)
 
     @rpc.method
-    async def request_reservation(self, *args, **kwargs):
+    async def request(self, *args, **kwargs):
         log.debug("", args=args, kwargs=kwargs)
 
         if len(self.inact_pool) == 0:
@@ -44,7 +44,7 @@ class Service(rpc.AttrHandler):
             return -1
 
         worker = self.inact_pool.pop()
-        ret = await worker.request_reservation(*args, **kwargs)
+        ret = await worker.request(*args, **kwargs)
 
         self.act_pool.add(worker)
         log.info("reservation started successfully", worker=worker.ident)
@@ -52,7 +52,7 @@ class Service(rpc.AttrHandler):
         return worker.ident
 
     @rpc.method
-    async def terminate_reservation(self, worker_id):
+    async def terminate(self, worker_id):
         hit = None
         ret = -1
         workers = list(self.act_pool)
@@ -62,7 +62,7 @@ class Service(rpc.AttrHandler):
                 break
 
         if hit is not None:
-            ret = await worker.terminate_reservation(worker_id)
+            ret = await worker.terminate(worker_id)
             self.inact_pool.add(hit)
             self.act_pool.remove(worker)
             log.info("terminate worker successfully", worker=ret)
@@ -72,23 +72,11 @@ class Service(rpc.AttrHandler):
         return ret
 
     @rpc.method
-    async def get_status(self):
+    async def status(self):
         log.debug("")
         ret = {}
         workers = list(self.act_pool)
         for worker in workers:
-            ret[str(worker.ident)] = await worker.get_status()
+            ret[str(worker.ident)] = await worker.status()
 
         return ret
-
-    @rpc.method
-    async def get_theater_list(self, *args, **kwargs):
-        pass
-
-    @rpc.method
-    async def get_movie_list(self, *args, **kwargs):
-        pass
-
-    @rpc.method
-    async def get_time_list(self, *args, **kwargs):
-        pass
