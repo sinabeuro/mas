@@ -27,8 +27,9 @@ class Client():
         return self.client
 
     async def disconnect(self):
-        await self.listener.close()
+        self.listener.close()
         await self.client.call.disconnect()
+        self.client.close()
 
     async def request(self, theater, day, time, movie, seat, n, silent="True"):
         self.ident = await self.client.call.request(theater,

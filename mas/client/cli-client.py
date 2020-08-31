@@ -33,11 +33,12 @@ async def main(args):
             history=FileHistory('.cli-client-history'),
             auto_suggest=AutoSuggestFromHistory())
 
-        while True:
+        on_prompt = True
+        while on_prompt:
             try:
                 args = await session.prompt_async()
                 if args == 'exit':
-                    break
+                    raise EOFError
                 args = parser.parse_known_args(args.split())
                 ret = await rpc(cli, args[0])
                 pprint.pprint(ret)
@@ -46,9 +47,11 @@ async def main(args):
             except KeyboardInterrupt:
                 print("KeyboardInterrupt")
             except EOFError:
-                return
+                on_prompt = False
     else:
         pprint.pprint(ret)
+
+    await cli.disconnect()
 
 logger = logging.getLogger()
 parser = argparse.ArgumentParser(prog='cli-client')
