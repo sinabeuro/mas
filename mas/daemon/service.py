@@ -18,10 +18,10 @@ class Service(rpc.AttrHandler):
         self.inact_pool = set()
         self.listeners = []
         for ident in range(0, NUM_OF_WORKERS):
-            worker = Worker(ident, copy.deepcopy(self.worker), self.on_noti_test)
+            worker = Worker(ident, copy.deepcopy(self.worker), self.notify)
             self.inact_pool.add(worker)
 
-    async def on_noti_test(self, result):
+    async def notify(self, result):
         log.info(self.listeners)
         for listener in self.listeners:
             await listener.notify.notify(result)
@@ -31,7 +31,7 @@ class Service(rpc.AttrHandler):
         pass
 
     @rpc.method
-    async def pass_noti_pipeline(self, listener_addr):
+    async def subscribe(self, listener_addr):
         notifier = await rpc.connect_pipeline(connect=listener_addr)
         self.listeners.append(notifier)
 

@@ -5,18 +5,12 @@ from mas.common import ADDRESS
 class NotifyHandler(rpc.AttrHandler):
 
     def __init__(self, notify= None, on_reserved=None):
-        self.on_noti_test_cb = notify
-        self.on_reserved_cb = on_reserved
+        self.notify_cb = notify
 
     @rpc.method
     async def notify(self, result):
-        if self.on_noti_test_cb is not None:
-            await self.on_noti_test_cb(result)
-
-    @rpc.method
-    async def on_reserved(self, result):
-        if self.on_reserved_cb is not None:
-            await self.on_reserved_cb(result)
+        if self.notify_cb is not None:
+            await self.notify_cb(result)
 
 class Client():
     def __init__(self):
@@ -28,7 +22,7 @@ class Client():
         self.client = await rpc.connect_rpc(connect=connect, timeout=10)
         self.listener = await rpc.serve_pipeline(NotifyHandler(notify=notify), bind='ipc://*:*')
         listener_addr = list(self.listener.transport.bindings())[0]
-        await self.client.call.pass_noti_pipeline(listener_addr)
+        await self.client.call.subscribe(listener_addr)
 
         return self.client
 
