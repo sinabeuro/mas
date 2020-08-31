@@ -17,9 +17,6 @@ class SimpleWorker(Worker):
     async def status(self):
         return 0
 
-    async def notity(self, msg):
-        pass
-
 async def main():
     mas = Mas(SimpleWorker())
     await mas.start()

@@ -1,5 +1,7 @@
 class Worker(object):
-        
+    def __init__(self):
+        self.notify = None
+
     async def request(self, theater, day, time, movie, seat, n, silent=True):
         pass
 
@@ -7,7 +9,4 @@ class Worker(object):
         pass
 
     async def status(self):
-        pass
-
-    async def notity(self, msg):
         pass

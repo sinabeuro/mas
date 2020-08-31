@@ -24,7 +24,7 @@ class Service(rpc.AttrHandler):
     async def on_noti_test(self, result):
         log.info(self.listeners)
         for listener in self.listeners:
-            await listener.notify.on_noti_test(result)
+            await listener.notify.notify(result)
 
     @rpc.method
     async def disconnect(self):
