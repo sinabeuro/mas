@@ -13,17 +13,17 @@ class Worker(object):
 
     async def request(self, theater, day, time, movie, seat, n, silent=True):
         if self.worker : await self.worker.request(theater, day, time, movie, seat, n, silent)
-        log.info("request is activated")
+        log.debug("request is activated")
 
     async def terminate(self, worker_id):
         if self.worker : await self.worker.terminate(worker_id)
-        log.info("termination is activated")
+        log.debug("termination is activated")
 
     async def status(self):
         if self.worker : await self.worker.status()
-        log.info("status is activated")
+        log.debug("status is activated")
         return 0
 
     async def notify(self, msg):
         await self.notifier(msg)
-        log.info("notity is activated")
+        log.debug("notity is activated")

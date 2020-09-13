@@ -28,7 +28,7 @@ class Service(rpc.AttrHandler):
 
     @rpc.method
     async def disconnect(self):
-        pass
+        log.info("disconnected successfully")
 
     @rpc.method
     async def subscribe(self, listener_addr):
@@ -47,7 +47,8 @@ class Service(rpc.AttrHandler):
         ret = await worker.request(*args, **kwargs)
 
         self.act_pool.add(worker)
-        log.info("reservation started successfully", worker=worker.ident)
+        log.info("reservation started successfully", worker=worker.ident,
+            ret=ret)
 
         return worker.ident
 
@@ -65,7 +66,8 @@ class Service(rpc.AttrHandler):
             ret = await worker.terminate(worker_id)
             self.inact_pool.add(hit)
             self.act_pool.remove(worker)
-            log.info("terminate worker successfully", worker=ret)
+            log.info(f"terminate worker successfully", worker=worker_id,
+                ret=ret)
         else:
             log.error("no such of worker")
 
