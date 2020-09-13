@@ -1,5 +1,9 @@
 import asyncio
+import json
+
 from aiozmq import rpc
+import zmq
+
 from mas.common import ADDRESS
 
 class NotifyHandler(rpc.AttrHandler):
@@ -19,7 +23,8 @@ class Client():
         self.listener = None
 
     async def connect(self, connect=ADDRESS, notify=None, on_reserved=None):
-        self.client = await rpc.connect_rpc(connect=connect, timeout=10)
+        self.client = await rpc.connect_rpc(connect=connect, timeout=1)
+        self.client.transport.setsockopt(zmq.LINGER, 0)
         self.listener = await rpc.serve_pipeline(NotifyHandler(notify=notify), bind='ipc://*:*')
         listener_addr = list(self.listener.transport.bindings())[0]
         await self.client.call.subscribe(listener_addr)
@@ -31,7 +36,8 @@ class Client():
         await self.client.call.disconnect()
         self.client.close()
 
-    async def request(self, theater, day, time, movie, seat, n, silent="True"):
+    async def request(self, theater, day, time, movie, seat, n, silent):
+        silent = json.loads(silent.lower())
         self.ident = await self.client.call.request(theater,
             day, time, movie, seat, n, silent)
         return self.ident
