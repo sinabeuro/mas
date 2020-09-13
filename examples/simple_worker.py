@@ -18,8 +18,8 @@ class SimpleWorker(Worker):
         return 0
 
 async def main():
-    mas = Mas(SimpleWorker())
-    await mas.start()
+    async with Mas(SimpleWorker()) as mas:
+        await mas.start()
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
