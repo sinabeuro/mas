@@ -1,22 +1,25 @@
-import asyncio
-from mas.lib import Client
 import argparse
-import pprint
+import asyncio
 import logging
+import pprint
+
 from prompt_toolkit import PromptSession
-from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.history import FileHistory
+
+from mas.lib import Client
+
 
 def notify(result):
     if result == -1:
-        print(f"The server has been shut down.")
+        print(f'The server has been shut down.')
         tasks = [
-            t for t in asyncio.all_tasks()
-            if t is not asyncio.current_task()
-            ]
+            t for t in asyncio.all_tasks() if t is not asyncio.current_task()
+        ]
         [task.cancel() for task in tasks]
         return
     print(result)
+
 
 async def rpc(cli, args):
     try:
@@ -32,6 +35,7 @@ async def rpc(cli, args):
     except TypeError as e:
         logger.error(e)
 
+
 async def main(args):
     cli = Client()
 
@@ -39,14 +43,16 @@ async def main(args):
     try:
         ret = await cli.connect(notify=notify)
     except asyncio.TimeoutError:
-        print("Could not connect.")
+        print('Could not connect.')
         return
 
     ret = await rpc(cli, args)
     if ret is None:
-        session = PromptSession('cli-client> ',
+        session = PromptSession(
+            'cli-client> ',
             history=FileHistory('.cli-client-history'),
-            auto_suggest=AutoSuggestFromHistory())
+            auto_suggest=AutoSuggestFromHistory(),
+        )
 
         on_prompt = True
         while on_prompt:
@@ -60,10 +66,10 @@ async def main(args):
             except SystemExit:
                 pass
             except (asyncio.TimeoutError, asyncio.CancelledError):
-                print("Connection is not valid.")
+                print('Connection is not valid.')
                 return
             except KeyboardInterrupt:
-                print("KeyboardInterrupt")
+                print('KeyboardInterrupt')
             except EOFError:
                 on_prompt = False
     else:
@@ -72,7 +78,8 @@ async def main(args):
     try:
         await cli.disconnect()
     except asyncio.TimeoutError:
-        print("Connection is not valid.")
+        print('Connection is not valid.')
+
 
 logger = logging.getLogger()
 parser = argparse.ArgumentParser(prog='cli-client')

@@ -4,14 +4,14 @@ import signal
 from aiozmq import rpc
 from structlog import get_logger
 
-from mas.daemon import Service
 from mas.common import ADDRESS
+from mas.daemon import Service
 from mas.lib import Worker
 
 log = get_logger()
 
-class Mas(object):
 
+class Mas(object):
     def __init__(self, worker=None):
         self.service = None
         self.worker = worker
@@ -20,7 +20,8 @@ class Mas(object):
         signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
         for s in signals:
             asyncio.get_event_loop().add_signal_handler(
-                s, lambda s=s: asyncio.create_task(self.shutdown(s)))
+                s, lambda s=s: asyncio.create_task(self.shutdown(s))
+            )
 
     async def __aenter__(self):
         return self
@@ -31,11 +32,10 @@ class Mas(object):
         await self.close()
 
     async def shutdown(self, signal):
-        log.info(f"Received signal {signal.name}...")
+        log.info(f'Received signal {signal.name}...')
         tasks = [
-            t for t in asyncio.all_tasks()
-            if t is not asyncio.current_task()
-            ]
+            t for t in asyncio.all_tasks() if t is not asyncio.current_task()
+        ]
         [task.cancel() for task in tasks]
 
     async def start(self):
@@ -44,7 +44,7 @@ class Mas(object):
         try:
             await self.server.wait_closed()
         except asyncio.CancelledError:
-            log.info("cancelled service")
+            log.info('cancelled service')
         finally:
             await self.close()
 

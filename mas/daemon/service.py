@@ -1,17 +1,18 @@
 import asyncio
-from aiozmq import rpc
-import os
 import copy
+import os
+
+from aiozmq import rpc
 from structlog import get_logger
 
 from mas.common import NUM_OF_WORKERS
+from mas.daemon.worker import Worker
 from mas.lib import Client
-from mas.daemon import Worker
 
 log = get_logger()
 
-class Service(rpc.AttrHandler):
 
+class Service(rpc.AttrHandler):
     def __init__(self, worker):
         self.worker = worker
         self.act_pool = set()
@@ -28,7 +29,7 @@ class Service(rpc.AttrHandler):
 
     @rpc.method
     async def disconnect(self):
-        log.info("disconnected successfully")
+        log.info('disconnected successfully')
 
     @rpc.method
     async def subscribe(self, listener_addr):
@@ -40,15 +41,16 @@ class Service(rpc.AttrHandler):
         log.debug("", args=args, kwargs=kwargs)
 
         if len(self.inact_pool) == 0:
-            log.error("not enough worker", num_of_workers=NUM_OF_WORKERS)
+            log.error('not enough worker', num_of_workers=NUM_OF_WORKERS)
             return -1
 
         worker = self.inact_pool.pop()
         ret = await worker.request(*args, **kwargs)
 
         self.act_pool.add(worker)
-        log.info("reservation started successfully", worker=worker.ident,
-            ret=ret)
+        log.info(
+            'reservation started successfully', worker=worker.ident, ret=ret
+        )
 
         return worker.ident
 
@@ -66,10 +68,11 @@ class Service(rpc.AttrHandler):
             ret = await worker.terminate(worker_id)
             self.inact_pool.add(hit)
             self.act_pool.remove(worker)
-            log.info(f"terminate worker successfully", worker=worker_id,
-                ret=ret)
+            log.info(
+                f'terminate worker successfully', worker=worker_id, ret=ret
+            )
         else:
-            log.error("no such of worker")
+            log.error('no such of worker')
 
         return ret
 

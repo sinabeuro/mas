@@ -1,6 +1,8 @@
 import logging
 import pprint
+
 from aiogram import Bot, Dispatcher, executor, types
+
 from mas.lib import Client
 
 API_TOKEN = 'enter your token'
@@ -14,9 +16,11 @@ dp = Dispatcher(bot)
 cli = None
 users = []
 
+
 async def notify(result):
     for user in users:
         await bot.send_message(user, result)
+
 
 @dp.message_handler(commands=['s', 'start'])
 async def send_welcome(message: types.Message):
@@ -30,9 +34,10 @@ async def send_welcome(message: types.Message):
     This handler will be called when client send `/start` or `/help` commands.
     """
     if cli is not None:
-        await message.reply("Connection succeeded")
+        await message.reply('Connection succeeded')
     else:
-        await message.reply("Connection failed")
+        await message.reply('Connection failed')
+
 
 @dp.message_handler(commands=['r', 'request'])
 async def request(message: types.Message):
@@ -40,9 +45,12 @@ async def request(message: types.Message):
 
     ret = await cli.request(*args)
     if ret >= 0:
-        await bot.send_message(message.chat.id, "Request succeeded, Worker : %d" % ret)
+        await bot.send_message(
+            message.chat.id, 'Request succeeded, Worker : %d' % ret
+        )
     else:
-        await bot.send_message(message.chat.id, "Request failed")
+        await bot.send_message(message.chat.id, 'Request failed')
+
 
 @dp.message_handler(commands=['t', 'terminate'])
 async def terminate(message: types.Message):
@@ -50,9 +58,10 @@ async def terminate(message: types.Message):
 
     ret = await cli.terminate(int(*args))
     if ret == 0:
-        await bot.send_message(message.chat.id, "Termination succeeded")
+        await bot.send_message(message.chat.id, 'Termination succeeded')
     else:
-        await bot.send_message(message.chat.id, "Termination failed")
+        await bot.send_message(message.chat.id, 'Termination failed')
+
 
 @dp.message_handler(commands=['stat', 'status'])
 async def status(message: types.Message):
@@ -61,11 +70,13 @@ async def status(message: types.Message):
     if ret is not {}:
         await bot.send_message(message.chat.id, pprint.pformat(ret, indent=4))
     else:
-        await bot.send_message(message.chat.id, "Get status failed")
+        await bot.send_message(message.chat.id, 'Get status failed')
+
 
 @dp.message_handler()
 async def echo(message: types.Message):
-    await bot.send_message(message.chat.id, "Invalid command")
+    await bot.send_message(message.chat.id, 'Invalid command')
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
