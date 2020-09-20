@@ -1,9 +1,11 @@
 import logging
 import pprint
+
 from aiogram import Bot, Dispatcher, executor, types
+
 from mas.lib import Client
 
-API_TOKEN = 'enter your token'
+API_TOKEN = "enter your token"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,11 +16,13 @@ dp = Dispatcher(bot)
 cli = None
 users = []
 
+
 async def notify(result):
     for user in users:
         await bot.send_message(user, result)
 
-@dp.message_handler(commands=['s', 'start'])
+
+@dp.message_handler(commands=["s", "start"])
 async def send_welcome(message: types.Message):
     global cli
     global users
@@ -34,17 +38,21 @@ async def send_welcome(message: types.Message):
     else:
         await message.reply("Connection failed")
 
-@dp.message_handler(commands=['r', 'request'])
+
+@dp.message_handler(commands=["r", "request"])
 async def request(message: types.Message):
     args = message.text.split()[1:]
 
     ret = await cli.request(*args)
     if ret >= 0:
-        await bot.send_message(message.chat.id, "Request succeeded, Worker : %d" % ret)
+        await bot.send_message(
+            message.chat.id, "Request succeeded, Worker : %d" % ret
+        )
     else:
         await bot.send_message(message.chat.id, "Request failed")
 
-@dp.message_handler(commands=['t', 'terminate'])
+
+@dp.message_handler(commands=["t", "terminate"])
 async def terminate(message: types.Message):
     args = message.text.split()[1:]
 
@@ -54,7 +62,8 @@ async def terminate(message: types.Message):
     else:
         await bot.send_message(message.chat.id, "Termination failed")
 
-@dp.message_handler(commands=['stat', 'status'])
+
+@dp.message_handler(commands=["stat", "status"])
 async def status(message: types.Message):
 
     ret = await cli.status()
@@ -63,9 +72,11 @@ async def status(message: types.Message):
     else:
         await bot.send_message(message.chat.id, "Get status failed")
 
+
 @dp.message_handler()
 async def echo(message: types.Message):
     await bot.send_message(message.chat.id, "Invalid command")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)

@@ -1,17 +1,18 @@
 import asyncio
-from aiozmq import rpc
-import os
 import copy
+import os
+
+from aiozmq import rpc
 from structlog import get_logger
 
 from mas.common import NUM_OF_WORKERS
-from mas.lib import Client
 from mas.daemon import Worker
+from mas.lib import Client
 
 log = get_logger()
 
-class Service(rpc.AttrHandler):
 
+class Service(rpc.AttrHandler):
     def __init__(self, worker):
         self.worker = worker
         self.act_pool = set()
@@ -47,8 +48,9 @@ class Service(rpc.AttrHandler):
         ret = await worker.request(*args, **kwargs)
 
         self.act_pool.add(worker)
-        log.info("reservation started successfully", worker=worker.ident,
-            ret=ret)
+        log.info(
+            "reservation started successfully", worker=worker.ident, ret=ret
+        )
 
         return worker.ident
 
@@ -66,8 +68,9 @@ class Service(rpc.AttrHandler):
             ret = await worker.terminate(worker_id)
             self.inact_pool.add(hit)
             self.act_pool.remove(worker)
-            log.info(f"terminate worker successfully", worker=worker_id,
-                ret=ret)
+            log.info(
+                f"terminate worker successfully", worker=worker_id, ret=ret
+            )
         else:
             log.error("no such of worker")
 
