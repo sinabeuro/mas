@@ -8,6 +8,14 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 def notify(result):
+    if result == -1:
+        print(f"The server has been shut down.")
+        tasks = [
+            t for t in asyncio.all_tasks()
+            if t is not asyncio.current_task()
+            ]
+        [task.cancel() for task in tasks]
+        return
     print(result)
 
 async def rpc(cli, args):
@@ -26,7 +34,14 @@ async def rpc(cli, args):
 
 async def main(args):
     cli = Client()
-    ret = await cli.connect(notify=notify)
+
+    ret = None
+    try:
+        ret = await cli.connect(notify=notify)
+    except asyncio.TimeoutError:
+        print("Could not connect.")
+        return
+
     ret = await rpc(cli, args)
     if ret is None:
         session = PromptSession('cli-client> ',
@@ -44,6 +59,9 @@ async def main(args):
                 pprint.pprint(ret)
             except SystemExit:
                 pass
+            except (asyncio.TimeoutError, asyncio.CancelledError):
+                print("Connection is not valid.")
+                return
             except KeyboardInterrupt:
                 print("KeyboardInterrupt")
             except EOFError:
@@ -51,7 +69,10 @@ async def main(args):
     else:
         pprint.pprint(ret)
 
-    await cli.disconnect()
+    try:
+        await cli.disconnect()
+    except asyncio.TimeoutError:
+        print("Connection is not valid.")
 
 logger = logging.getLogger()
 parser = argparse.ArgumentParser(prog='cli-client')
