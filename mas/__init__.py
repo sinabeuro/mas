@@ -15,6 +15,8 @@ class Mas(object):
     def __init__(self, worker=None):
         self.service = None
         self.worker = worker
+        self.service = Service(self.worker)
+        self.started = False
         signals = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
         for s in signals:
             asyncio.get_event_loop().add_signal_handler(
@@ -37,7 +39,8 @@ class Mas(object):
         [task.cancel() for task in tasks]
 
     async def start(self):
-        self.server = await rpc.serve_rpc(Service(self.worker), bind=ADDRESS)
+        self.server = await rpc.serve_rpc(self.service, bind=ADDRESS)
+        self.started = True
         try:
             await self.server.wait_closed()
         except asyncio.CancelledError:
@@ -46,4 +49,6 @@ class Mas(object):
             await self.close()
 
     async def close(self):
-        pass
+        if self.started:
+            await self.service.notify(-1)
+            self.started = False
