@@ -8,7 +8,7 @@ class SimpleWorker(Worker):
     def __init__(self):
         super().__init__()
 
-    async def request(self, theater, day, time, movie, seat, n, silent=True):
+    async def request(self, session, theater, day, time, movie, seat, n, silent=True):
         pass
 
     async def terminate(self, worker_id):
