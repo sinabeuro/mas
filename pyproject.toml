@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "mas"
+version = "0.1.0"
+description = "Web automation micro framework"
+authors = ["sinabeuro <ican312@hanmail.net>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+aiozmq = "^0.9.0"
+arsenic = "^20.9"
+msgpack = "^1.0.2"
+prompt-toolkit = "^3.0.8"
+structlog = "^20.1.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
