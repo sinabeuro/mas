@@ -32,7 +32,7 @@ async def rpc(cli, args):
         else:
             ret = None
         return ret
-    except TypeError as e:
+    except (ValueError, TypeError) as e:
         logger.error(e)
 
 
@@ -44,6 +44,7 @@ async def main(args):
         ret = await cli.connect(notify=notify)
     except asyncio.TimeoutError:
         print('Could not connect.')
+        await cli.disconnect()
         return
 
     ret = await rpc(cli, args)
@@ -67,7 +68,7 @@ async def main(args):
                 pass
             except (asyncio.TimeoutError, asyncio.CancelledError):
                 print('Connection is not valid.')
-                return
+                break
             except KeyboardInterrupt:
                 print('KeyboardInterrupt')
             except EOFError:
@@ -75,10 +76,7 @@ async def main(args):
     else:
         pprint.pprint(ret)
 
-    try:
-        await cli.disconnect()
-    except asyncio.TimeoutError:
-        print('Connection is not valid.')
+    await cli.disconnect()
 
 
 logger = logging.getLogger()

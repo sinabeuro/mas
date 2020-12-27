@@ -24,7 +24,7 @@ class Client:
         self.listener = None
 
     async def connect(self, connect=ADDRESS, notify=None, on_reserved=None):
-        self.client = await rpc.connect_rpc(connect=connect, timeout=1)
+        self.client = await rpc.connect_rpc(connect=connect, timeout=5)
         self.client.transport.setsockopt(zmq.LINGER, 0)
         self.listener = await rpc.serve_pipeline(
             NotifyHandler(notify=notify), bind='ipc://*:*'
@@ -36,7 +36,6 @@ class Client:
 
     async def disconnect(self):
         self.listener.close()
-        await self.client.call.disconnect()
         self.client.close()
 
     async def request(self, theater, day, time, movie, seat, n, silent):
