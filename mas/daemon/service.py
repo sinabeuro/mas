@@ -65,9 +65,9 @@ class Service(rpc.AttrHandler):
                 break
 
         if hit is not None:
-            ret = await worker.terminate(worker_id)
+            ret = await hit.terminate(worker_id)
             self.inact_pool.add(hit)
-            self.act_pool.remove(worker)
+            self.act_pool.remove(hit)
             log.info(
                 f'terminate worker successfully', worker=worker_id, ret=ret
             )
