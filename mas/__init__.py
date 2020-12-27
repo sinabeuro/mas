@@ -12,7 +12,7 @@ log = get_logger()
 
 
 class Mas(object):
-    def __init__(self, worker=None):
+    def __init__(self, worker=None, silent=True):
         self.service = None
         self.worker = worker
         self.service = Service(self.worker)

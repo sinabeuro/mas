@@ -13,13 +13,15 @@ log = get_logger()
 
 
 class Service(rpc.AttrHandler):
-    def __init__(self, worker):
+    def __init__(self, worker, silent=True):
         self.worker = worker
         self.act_pool = set()
         self.inact_pool = set()
         self.listeners = []
         for ident in range(0, NUM_OF_WORKERS):
-            worker = Worker(ident, copy.deepcopy(self.worker), self.notify)
+            worker = Worker(
+                ident, copy.deepcopy(self.worker), self.notify, silent
+            )
             self.inact_pool.add(worker)
 
     async def notify(self, result):

@@ -38,11 +38,8 @@ class Client:
         self.listener.close()
         self.client.close()
 
-    async def request(self, theater, day, time, movie, seat, n, silent):
-        silent = json.loads(silent.lower())
-        self.ident = await self.client.call.request(
-            theater, day, time, movie, seat, n, silent
-        )
+    async def request(self, *args, **kwargs):
+        self.ident = await self.client.call.request(*args, **kwargs)
         return self.ident
 
     async def terminate(self, worker_id):

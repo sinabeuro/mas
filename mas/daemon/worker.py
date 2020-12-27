@@ -9,29 +9,27 @@ log = get_logger()
 
 
 class Worker(object):
-    def __init__(self, ident, worker, notifier):
+    def __init__(self, ident, worker, notifier, silent):
         self.ident = ident
         self.worker = worker
         self.notifier = notifier
         self.worker.notify = self.notify
+        self.silent = silent
+        self.browser = None
         self.session = None
 
-    async def request(self, theater, day, time, movie, seat, n, silent=False):
-        browser = None
-        log.debug(bool(silent))
-        if bool(silent):
-            browser = browsers.Firefox(
+    async def request(self, *args, **kwargs):
+        if self.silent:
+            self.browser = browsers.Firefox(
                 **{'moz:firefoxOptions': {'args': ['-headless']}}
             )
         else:
-            browser = Firefox()
+            self.browser = Firefox()
 
-        self.session = await start_session(Geckodriver(), browser)
+        self.session = await start_session(Geckodriver(), self.browser)
 
         if self.worker:
-            await self.worker.request(
-                self.session, theater, day, time, movie, seat, n, silent
-            )
+            await self.worker.request(self.session, *args, **kwargs)
         log.debug('request is activated')
         return 0
 
