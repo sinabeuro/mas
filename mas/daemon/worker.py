@@ -14,6 +14,7 @@ class Worker(object):
         self.worker = worker
         self.notifier = notifier
         self.worker.notify = self.notify
+        self.session = None
 
     async def request(self, theater, day, time, movie, seat, n, silent=False):
         browser = None
@@ -25,17 +26,20 @@ class Worker(object):
         else:
             browser = Firefox()
 
-        session = await start_session(Geckodriver(), browser)
+        self.session = await start_session(Geckodriver(), browser)
 
         if self.worker:
             await self.worker.request(
-                session, theater, day, time, movie, seat, n, silent
+                self.session, theater, day, time, movie, seat, n, silent
             )
         log.debug('request is activated')
+        return 0
 
     async def terminate(self, worker_id):
         if self.worker:
             await self.worker.terminate(worker_id)
+
+        await self.session.close()
         log.debug('termination is activated')
 
     async def status(self):
