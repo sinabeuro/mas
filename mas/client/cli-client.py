@@ -9,16 +9,18 @@ from prompt_toolkit.history import FileHistory
 
 from mas.lib import Client
 
+log = logging.getLogger()
+
 
 def notify(result):
     if result == -1:
-        print(f'The server has been shut down.')
+        log.info(f'The server has been shut down.')
         tasks = [
             t for t in asyncio.all_tasks() if t is not asyncio.current_task()
         ]
         [task.cancel() for task in tasks]
         return
-    print(result)
+    log.info(result)
 
 
 async def rpc(cli, args):
@@ -33,7 +35,7 @@ async def rpc(cli, args):
             ret = None
         return ret
     except (ValueError, TypeError) as e:
-        logger.error(e)
+        log.error(e)
 
 
 async def main(args):
@@ -43,7 +45,7 @@ async def main(args):
     try:
         ret = await cli.connect(notify=notify)
     except asyncio.TimeoutError:
-        print('Could not connect.')
+        log.info('Could not connect.')
         await cli.disconnect()
         return
 
@@ -67,10 +69,10 @@ async def main(args):
             except SystemExit:
                 pass
             except (asyncio.TimeoutError, asyncio.CancelledError):
-                print('Connection is not valid.')
+                log.info('Connection is not valid.')
                 break
             except KeyboardInterrupt:
-                print('KeyboardInterrupt')
+                log.info('KeyboardInterrupt')
             except EOFError:
                 on_prompt = False
     else:
@@ -79,7 +81,6 @@ async def main(args):
     await cli.disconnect()
 
 
-logger = logging.getLogger()
 parser = argparse.ArgumentParser(prog='cli-client')
 sub_parsers = parser.add_subparsers()
 r_parser = sub_parsers.add_parser('request')
