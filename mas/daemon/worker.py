@@ -41,10 +41,11 @@ class Worker(object):
         log.debug('termination is activated')
 
     async def status(self):
+        ret = 0
         if self.worker:
-            await self.worker.status()
+            ret = await self.worker.status()
         log.debug('status is activated')
-        return 0
+        return ret
 
     async def notify(self, msg):
         await self.notifier(msg)

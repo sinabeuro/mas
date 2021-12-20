@@ -13,7 +13,7 @@ log = get_logger()
 
 
 class Service(rpc.AttrHandler):
-    def __init__(self, worker, silent=True):
+    def __init__(self, worker, silent=False):
         self.worker = worker
         self.act_pool = set()
         self.inact_pool = set()
@@ -47,11 +47,11 @@ class Service(rpc.AttrHandler):
             return -1
 
         worker = self.inact_pool.pop()
-        ret = await worker.request(*args, **kwargs)
+        asyncio.create_task(worker.request(*args, **kwargs))
 
         self.act_pool.add(worker)
         log.info(
-            'reservation started successfully', worker=worker.ident, ret=ret
+            'reservation started successfully', worker=worker.ident
         )
 
         return worker.ident
@@ -80,10 +80,10 @@ class Service(rpc.AttrHandler):
 
     @rpc.method
     async def status(self):
-        log.debug("")
+        log.debug("status is called")
         ret = {}
         workers = list(self.act_pool)
         for worker in workers:
             ret[str(worker.ident)] = await worker.status()
 
-        return ret
+        return str(ret)

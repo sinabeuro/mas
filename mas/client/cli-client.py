@@ -35,7 +35,7 @@ async def rpc(cli, args):
             ret = None
         return ret
     except (ValueError, TypeError) as e:
-        log.error(e)
+        log.exception(e)
 
 
 async def main(args):
